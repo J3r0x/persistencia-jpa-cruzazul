@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>ec.ups</groupId>
-  <artifactId>persistencia-jpa-fybeca</artifactId>
+  <artifactId>persistencia-jpa-cruzazul</artifactId>
   <version>1.0</version>
 
   <properties>
@@ -39,7 +39,7 @@
         <artifactId>exec-maven-plugin</artifactId>
         <version>3.1.0</version>
         <configuration>
-          <mainClass>ec.ups.fybeca.Main</mainClass>
+          <mainClass>ec.ups.cruzazul.Main</mainClass>
         </configuration>
       </plugin>
     </plugins>

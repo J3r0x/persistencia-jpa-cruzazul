@@ -1,4 +1,4 @@
-package ec.ups.fybeca.modelo;
+package ec.ups.cruzazul.modelo;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;

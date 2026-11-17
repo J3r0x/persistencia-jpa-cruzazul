@@ -1,6 +1,6 @@
-package ec.ups.fybeca;
+package ec.ups.cruzazul;
 
-import ec.ups.fybeca.modelo.*;
+import ec.ups.cruzazul.modelo.*;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Random;
 
 /**
- * Modelo académico de la cadena de farmacias Fybeca (Corporación GPF, Ecuador).
+ * Modelo académico de Farmacias Cruz Azul (Grupo DIFARE, Ecuador).
  * Crea el esquema en H2, carga datos de prueba y ejecuta tres consultas JPQL
  * con filtros, ordenamiento y paginación.
  */
@@ -22,14 +22,14 @@ public class Main {
     static final LocalDate HOY = LocalDate.of(2026, 11, 16);
 
     public static void main(String[] args) {
-        EntityManagerFactory emf = Persistence.createEntityManagerFactory("fybecaPU",
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("cruzazulPU",
                 Map.of("eclipselink.logging.level.sql", System.getProperty("sql.log", "OFF")));
         EntityManager em = emf.createEntityManager();
         cargarDatos(em);
         em.clear(); // las consultas leen desde la base, no desde la caché de la sesión
 
         consulta1ProductosMasVendidos(em);
-        consulta2ClientesVitalcard(em);
+        consulta2ClientesConPuntos(em);
         consulta3ProductosEnPromocion(em);
 
         em.close();
@@ -59,20 +59,20 @@ public class Main {
         }
     }
 
-    /** Clientes con tarjeta Vitalcard activa y más de cierto puntaje, con su número de compras. */
-    static void consulta2ClientesVitalcard(EntityManager em) {
-        System.out.println("\n=== Consulta 2: clientes Vitalcard activos con 300 puntos o más (página 1 de 5) ===");
-        List<ClienteVitalcard> filas = em.createQuery("""
-                SELECT NEW ec.ups.fybeca.modelo.ClienteVitalcard(c.apellidos, c.nombres, t.puntos, COUNT(v))
-                FROM Cliente c JOIN c.tarjeta t LEFT JOIN c.ventas v
+    /** Clientes con cuenta activa en el Plan de Puntos y más de cierto puntaje, con su número de compras. */
+    static void consulta2ClientesConPuntos(EntityManager em) {
+        System.out.println("\n=== Consulta 2: clientes del Plan de Puntos activos con 150 puntos o más (página 1 de 5) ===");
+        List<ClientePuntos> filas = em.createQuery("""
+                SELECT NEW ec.ups.cruzazul.modelo.ClientePuntos(c.apellidos, c.nombres, t.puntos, COUNT(v))
+                FROM Cliente c JOIN c.cuentaPuntos t LEFT JOIN c.ventas v
                 WHERE t.activa = TRUE AND t.puntos >= :minimo
                 GROUP BY c.id, c.apellidos, c.nombres, t.puntos
-                ORDER BY t.puntos DESC, c.apellidos ASC""", ClienteVitalcard.class)
-                .setParameter("minimo", 300)
+                ORDER BY t.puntos DESC, c.apellidos ASC""", ClientePuntos.class)
+                .setParameter("minimo", 150)
                 .setFirstResult(0)
                 .setMaxResults(5)
                 .getResultList();
-        for (ClienteVitalcard c : filas) {
+        for (ClientePuntos c : filas) {
             System.out.printf("%-12s %-10s %5d puntos, %d compras%n", c.apellidos(), c.nombres(), c.puntos(), c.compras());
         }
     }
@@ -100,13 +100,13 @@ public class Main {
     private static void cargarDatos(EntityManager em) {
         em.getTransaction().begin();
 
-        // Sucursales: nombres de ejemplo por sector; no son datos internos de la empresa.
+        // Locales: nombres de ejemplo por sector; no son datos internos de la empresa.
         List<Sucursal> sucursales = List.of(
-                new Sucursal("UIO-01", "Fybeca El Bosque", "Quito"),
-                new Sucursal("UIO-02", "Fybeca Cumbayá", "Quito"),
-                new Sucursal("UIO-03", "Fybeca Quicentro Sur", "Quito"),
-                new Sucursal("GYE-01", "Fybeca Urdesa", "Guayaquil"),
-                new Sucursal("CUE-01", "Fybeca Remigio Crespo", "Cuenca"));
+                new Sucursal("UIO-01", "Cruz Azul La Carolina", "Quito"),
+                new Sucursal("UIO-02", "Cruz Azul Chillogallo", "Quito"),
+                new Sucursal("UIO-03", "Cruz Azul Carcelén", "Quito"),
+                new Sucursal("GYE-01", "Cruz Azul La Alborada", "Guayaquil"),
+                new Sucursal("CUE-01", "Cruz Azul Totoracocha", "Cuenca"));
         sucursales.forEach(em::persist);
 
         Promocion dolor = new Promocion("Semana del alivio", 20, LocalDate.of(2026, 11, 10), LocalDate.of(2026, 11, 23));
@@ -150,19 +150,19 @@ public class Main {
             {"Iturralde", "Paola"}, {"Jaramillo", "Sebastián"}, {"López", "Camila"}, {"Molina", "Mateo"},
         };
         List<Cliente> clientes = new ArrayList<>();
-        List<TarjetaVitalcard> tarjetas = new ArrayList<>();
+        List<CuentaPuntos> cuentas = new ArrayList<>();
         for (int i = 0; i < personas.length; i++) {
             Cliente c = new Cliente(String.format("17%08d", 2000 + i), personas[i][1], personas[i][0],
                     (personas[i][1].charAt(0) + personas[i][0]).toLowerCase() + "@correo.ec");
-            if (i % 4 != 3) {   // uno de cada cuatro clientes no tiene Vitalcard
-                TarjetaVitalcard t = new TarjetaVitalcard(String.format("6033%012d", 500 + i), 0,
+            if (i % 4 != 3) {   // uno de cada cuatro clientes no está afiliado al Plan de Puntos
+                CuentaPuntos t = new CuentaPuntos(String.format("PCA-%010d", 500 + i), 0,
                         i != 6, LocalDate.of(2024, 1 + i, 10), c);
-                c.setTarjeta(t);
-                tarjetas.add(t);
+                c.setCuentaPuntos(t);
+                cuentas.add(t);
             } else {
-                tarjetas.add(null);
+                cuentas.add(null);
             }
-            em.persist(c);  // la tarjeta se guarda en cascada
+            em.persist(c);  // la cuenta de puntos se guarda en cascada
             clientes.add(c);
         }
 
@@ -177,8 +177,8 @@ public class Main {
                 v.agregarDetalle(productos.get(azar.nextInt(productos.size())), 1 + azar.nextInt(3));
             }
             em.persist(v);   // los detalles se guardan en cascada
-            if (c != null && tarjetas.get(idx) != null) {
-                tarjetas.get(idx).sumarPuntos(v.getTotal().intValue() * 2);  // 2 puntos por dólar
+            if (c != null && cuentas.get(idx) != null) {
+                cuentas.get(idx).sumarPuntos(v.getTotal().intValue());  // 1 punto por cada dólar
             }
         }
         em.getTransaction().commit();

@@ -1,4 +1,4 @@
-package ec.ups.fybeca.modelo;
+package ec.ups.cruzazul.modelo;
 
 import jakarta.persistence.*;
 import java.util.ArrayList;
@@ -21,9 +21,9 @@ public class Cliente {
     @Column(length = 80)
     private String email;
 
-    // 1:1  cada cliente puede tener una sola tarjeta Vitalcard; la FK está en la tarjeta
+    // 1:1  cada cliente tiene como máximo una cuenta en el Plan de Puntos; la FK está en la cuenta
     @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private TarjetaVitalcard tarjeta;
+    private CuentaPuntos cuentaPuntos;
 
     // 1:N  un cliente hace muchas compras
     @OneToMany(mappedBy = "cliente")
@@ -38,7 +38,7 @@ public class Cliente {
         this.email = email;
     }
 
-    public void setTarjeta(TarjetaVitalcard tarjeta) { this.tarjeta = tarjeta; }
+    public void setCuentaPuntos(CuentaPuntos cuentaPuntos) { this.cuentaPuntos = cuentaPuntos; }
     public String getNombres() { return nombres; }
     public String getApellidos() { return apellidos; }
 }

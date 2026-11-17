@@ -1,35 +1,38 @@
-package ec.ups.fybeca.modelo;
+package ec.ups.cruzazul.modelo;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-/** Tarjeta del programa de beneficios: acumula puntos por compra. */
+/**
+ * Afiliación del cliente al Plan de Puntos: acumula puntos por cada dólar
+ * de compra, que luego se pueden usar para pagar compras futuras.
+ */
 @Entity
-public class TarjetaVitalcard {
+public class CuentaPuntos {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false, unique = true, length = 16)
-    private String numero;
+    private String codigo;
 
     private int puntos;
 
     private boolean activa;
 
-    private LocalDate fechaEmision;
+    private LocalDate fechaAfiliacion;
 
     // 1:1  lado dueño: aquí vive la columna cliente_id (única)
     @OneToOne(optional = false)
     @JoinColumn(unique = true)
     private Cliente cliente;
 
-    protected TarjetaVitalcard() { }
+    protected CuentaPuntos() { }
 
-    public TarjetaVitalcard(String numero, int puntos, boolean activa, LocalDate fechaEmision, Cliente cliente) {
-        this.numero = numero;
+    public CuentaPuntos(String codigo, int puntos, boolean activa, LocalDate fechaAfiliacion, Cliente cliente) {
+        this.codigo = codigo;
         this.puntos = puntos;
         this.activa = activa;
-        this.fechaEmision = fechaEmision;
+        this.fechaAfiliacion = fechaAfiliacion;
         this.cliente = cliente;
     }
 

@@ -2,20 +2,20 @@
 <persistence version="3.0" xmlns="https://jakarta.ee/xml/ns/persistence"
              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd">
-  <persistence-unit name="fybecaPU" transaction-type="RESOURCE_LOCAL">
+  <persistence-unit name="cruzazulPU" transaction-type="RESOURCE_LOCAL">
     <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
-    <class>ec.ups.fybeca.modelo.Sucursal</class>
-    <class>ec.ups.fybeca.modelo.Cliente</class>
-    <class>ec.ups.fybeca.modelo.TarjetaVitalcard</class>
-    <class>ec.ups.fybeca.modelo.Producto</class>
-    <class>ec.ups.fybeca.modelo.Promocion</class>
-    <class>ec.ups.fybeca.modelo.Venta</class>
-    <class>ec.ups.fybeca.modelo.DetalleVenta</class>
+    <class>ec.ups.cruzazul.modelo.Sucursal</class>
+    <class>ec.ups.cruzazul.modelo.Cliente</class>
+    <class>ec.ups.cruzazul.modelo.CuentaPuntos</class>
+    <class>ec.ups.cruzazul.modelo.Producto</class>
+    <class>ec.ups.cruzazul.modelo.Promocion</class>
+    <class>ec.ups.cruzazul.modelo.Venta</class>
+    <class>ec.ups.cruzazul.modelo.DetalleVenta</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>
       <!-- MODE=LEGACY: EclipseLink 4.0 genera "BIGINT IDENTITY", que H2 2.x solo acepta en este modo -->
-      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:fybeca;DB_CLOSE_DELAY=-1;MODE=LEGACY"/>
+      <property name="jakarta.persistence.jdbc.url" value="jdbc:h2:mem:cruzazul;DB_CLOSE_DELAY=-1;MODE=LEGACY"/>
       <property name="jakarta.persistence.jdbc.user" value="sa"/>
       <property name="jakarta.persistence.jdbc.password" value=""/>
       <property name="jakarta.persistence.schema-generation.database.action" value="create"/>
