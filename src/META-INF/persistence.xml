@@ -11,6 +11,7 @@
     <class>ec.ups.cruzazul.modelo.Promocion</class>
     <class>ec.ups.cruzazul.modelo.Venta</class>
     <class>ec.ups.cruzazul.modelo.DetalleVenta</class>
+    <class>ec.ups.cruzazul.modelo.StockLocal</class>
     <exclude-unlisted-classes>true</exclude-unlisted-classes>
     <properties>
       <property name="jakarta.persistence.jdbc.driver" value="org.h2.Driver"/>

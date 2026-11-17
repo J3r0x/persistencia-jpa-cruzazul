@@ -35,3 +35,16 @@ java -Dsql.log=FINE -cp "out:lib/*" ec.ups.cruzazul.Main   # muestra el SQL gene
 ```
 
 Con Maven: `mvn compile exec:java`
+
+## Unidad 4: control de concurrencia (`concurrencia/DemoConcurrencia.java`)
+
+Simula dos cajeros que trabajan a la vez sobre la misma cuenta de puntos o el mismo stock:
+
+1. Sin control: los dos leen 500 puntos y el segundo commit borra el canje del primero (actualización perdida).
+2. Bloqueo optimista: la entidad `StockLocal` tiene `@Version`; el segundo commit lanza `OptimisticLockException`.
+3. Bloqueo pesimista: `LockModeType.PESSIMISTIC_WRITE` (SELECT ... FOR UPDATE); el segundo cajero espera.
+4. Niveles de aislamiento con JDBC: lectura no repetible en READ COMMITTED y lectura estable en REPEATABLE READ.
+
+```bash
+java -cp "out:lib/*" ec.ups.cruzazul.concurrencia.DemoConcurrencia
+```
